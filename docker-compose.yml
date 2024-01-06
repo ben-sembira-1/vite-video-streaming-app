@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  h265-video-generator:
+    build: ./h265-video-server/video-generator
+    image: h265-video-generator
+    network_mode: host
+    command: "ffmpeg -t 10 -f lavfi -i testsrc=size=1920x1080:rate=30 -c:v libx265 -crf 28 -f rtp rtp://localhost:6000"
+  
+  video-server:
+    build: ./h265-video-server/video-server
+    image: h265-video-server
+    network_mode: host
+    environment:
+      - DISPLAY=$DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./h265-video-server/video-server:/app
+    command: "/usr/bin/firefox"
+  
+  streaming-app:
+    build: ./video-streaming-app
+    image: streaming-app
+    network_mode: host
+    volumes:
+      - ./video-streaming-app:/app
+    command: "npm run dev"
