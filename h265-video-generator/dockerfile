@@ -1,0 +1,11 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libx265-dev \
+    libnuma-dev
+
+RUN apt-get update && apt-get install -y firefox
+
+RUN useradd -ms /bin/bash user
+USER user
