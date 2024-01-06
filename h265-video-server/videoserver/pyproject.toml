@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "videoserver"
+version = "0.0.1"
+authors = [
+  { name="Ben Sembira", email="ben.sembira.1@gmail.com" },
+]
+description = "A fastapi video streaming server for the corresponding vite streaming app"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix",
+]
+dependencies = [
+  "fastapi",
+  "uvicorn",
+]

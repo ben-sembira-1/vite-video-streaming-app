@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  h265-video-generator:
+    build: ./h265-video-server/video-generator
+    image: h265-video-generator
+    network_mode: host
+    command: "ffmpeg -t 10 -f lavfi -i testsrc=size=1920x1080:rate=30 -c:v libx265 -crf 28 -f rtp rtp://localhost:6000"
+  
+  video-server:
+    build: ./h265-video-server/videoserver
+    image: video-server
+    network_mode: host
+    volumes:
+      - ./h265-video-server/videoserver:/app
+      - /home/ben/Downloads/:/from-host
+    command: "uvicorn videoserver.main:app --reload --port 7000"
+  
+  streaming-app:
+    build: ./video-streaming-app
+    image: streaming-app
+    network_mode: host
+    volumes:
+      - ./video-streaming-app:/app
+    command: "npm run dev"
