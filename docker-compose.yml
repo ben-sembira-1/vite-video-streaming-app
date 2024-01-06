@@ -8,12 +8,12 @@ services:
     command: "ffmpeg -t 10 -f lavfi -i testsrc=size=1920x1080:rate=30 -c:v libx265 -crf 28 -f rtp rtp://localhost:6000"
   
   video-server:
-    build: ./h265-video-server/video-server
-    image: h265-video-server
+    build: ./h265-video-server/videoserver
+    image: video-server
     network_mode: host
     volumes:
-      - ./h265-video-server/video-server:/app
-    command: "uvicorn videoserver.main:app"
+      - ./h265-video-server/videoserver:/app
+    command: "uvicorn videoserver.main:app --port 7000"
   
   streaming-app:
     build: ./video-streaming-app
