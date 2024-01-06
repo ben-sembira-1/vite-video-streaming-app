@@ -1,0 +1,7 @@
+FROM python:3.10
+
+COPY . /app
+
+RUN pip install /app
+
+CMD [ "uvicron", "videoserver.main:app", "--reload" ]

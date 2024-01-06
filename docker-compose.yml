@@ -11,12 +11,9 @@ services:
     build: ./h265-video-server/video-server
     image: h265-video-server
     network_mode: host
-    environment:
-      - DISPLAY=$DISPLAY
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
       - ./h265-video-server/video-server:/app
-    command: "/usr/bin/firefox"
+    command: "uvicorn videoserver.main:app"
   
   streaming-app:
     build: ./video-streaming-app
