@@ -14,7 +14,7 @@ async def read_user(username: str):
 @app.get("/video")
 async def video_endpoint():
     def iterfile():
-        with open("/workspaces/vite-video-streaming-app/h265-video-server/videoserver/example.mp4", mode="rb") as file_like:
+        with open("/from-host/short-example.mp4", mode="rb") as file_like:
             yield from file_like
     return StreamingResponse(iterfile(), media_type="video/mp4")
 
