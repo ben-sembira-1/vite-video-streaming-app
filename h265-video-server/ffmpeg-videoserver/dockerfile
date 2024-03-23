@@ -1,0 +1,13 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libx265-dev \
+    libnuma-dev \
+    curl
+
+WORKDIR /app
+
+COPY . .
+
+CMD [ "./listen_and_stream_to_http.sh" ]
