@@ -15,7 +15,7 @@ services:
     volumes:
       - /tmp/.X11-unix/:/tmp/.X11-unix/
       - ~/.Xauthority:/root/.Xauthority
-    command: 'gst-launch-1.0 udpsrc port=6000 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! avdec_h264 ! videoconvert ! queue ! fakesink'
+    command: 'gst-launch-1.0 udpsrc port=6000 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! avdec_h264 ! videoconvert ! queue ! video/x-raw, format=YUY2 ! jpegenc ! rtpjpegpay ! udpsink host=localhsot port=5000'
   
   ffmpeg_video_server:
     build: ./h265-video-server/ffmpeg-videoserver
