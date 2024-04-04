@@ -4,3 +4,9 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     libx265-dev \
     libnuma-dev
+
+WORKDIR /app
+
+COPY . .
+
+CMD [ "./h265_ffmpeg_generator.sh" ]

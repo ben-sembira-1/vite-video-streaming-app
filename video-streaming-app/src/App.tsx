@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from "react";
 import './App.css'
 
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [videoSrc, setVideoSrc] = useState(null);
+
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8080/camera-video");
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    socket.onmessage = (event) => {
+      const frameData = event.data;
+      const blob = new Blob([frameData], { type: "video/mp4" }); // Assuming frames are in MP4 format
+      const url = URL.createObjectURL(blob);
+      console.log(url);
+      setVideoSrc(url);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>Before video</h1>
+      {videoSrc && (
+        <video controls autoPlay>
+          <source src={videoSrc} type="video/mp4" />{" "}
+          {/* Update the type as per your frame format */}
+          Your browser does not support the video tag.
+        </video>
+      )}
+      <h1>After video</h1>
+    </div>
+  );
 }
 
-export default App
+export default App;
