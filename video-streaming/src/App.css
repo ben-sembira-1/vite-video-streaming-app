@@ -1,0 +1,9 @@
+/* App.css */
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Make the root container full height of the viewport */
+}
+

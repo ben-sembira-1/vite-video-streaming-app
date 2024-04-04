@@ -1,0 +1,9 @@
+/* styles.css */
+.video-container {
+  text-align: center;
+}
+
+.video-player {
+  width: 80%;
+  max-width: 800px;
+}
