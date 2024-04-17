@@ -1,45 +1,55 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 
-const VideoPlayer = ({ videoId }) => {
-    const videoRef = useRef(null);
-    const [startTime, setStartTime] = useState(null);
+const VideoPlayer = () => {
+  const videoRef = useRef(null);
+  const mediaSourceRef = useRef(null);
+  const sourceBufferRef = useRef(null);
 
-    useEffect(() => {
-        if (videoRef.current) {
-            // Pause the video, remove the source, and reload it
-            videoRef.current.pause();
-            videoRef.current.removeAttribute('src');
-            videoRef.current.load();
-            
-            // Add event listener for loadstart event
-            videoRef.current.addEventListener('loadstart', handleLoadStart);
-            
-            // Cleanup function to remove event listener
-            return () => {
-                videoRef.current.removeEventListener('loadstart', handleLoadStart);
-            };
-        }
-    }, [videoId]);
+  useEffect(() => {
+    const socket = io('http://localhost:3001');
+    socket.on('stream', (chunk) => {
+      console.log('Received chunk:', chunk.byteLength, 'bytes');
+      appendChunk(chunk);
+    });
 
-    const handleLoadStart = () => {
-        // Record the start time when the video begins to load
-        setStartTime(Date.now());
+    return () => {
+      socket.disconnect();
     };
+  }, []);
 
-    const handleLoadedData = () => {
-        if (startTime !== null) {
-            // Calculate the latency when video data is loaded
-            const latency = Date.now() - startTime;
-            console.log(`Latency: ${latency} ms`);
-        }
-    };
+  useEffect(() => {
+    if (videoRef.current && !mediaSourceRef.current) {
+      mediaSourceRef.current = new MediaSource();
+      mediaSourceRef.current.addEventListener('sourceopen', handleSourceOpen);
+      videoRef.current.src = URL.createObjectURL(mediaSourceRef.current);
+    }
+  }, [videoRef.current]);
 
-    return (
-        <video ref={videoRef} width='320' height='240' controls autoPlay onLoadedData={handleLoadedData}>
-            <source src={`http://localhost:3000/videos/${videoId}`} type='video/mp4' />
-            Your browser does not support the video tag.
-        </video>
-    );
+  const handleSourceOpen = () => {
+    console.log('MediaSource opened');
+    sourceBufferRef.current = mediaSourceRef.current.addSourceBuffer('video/mp4; codecs="avc1.4D401F"');
+  };
+
+  const appendChunk = (chunk) => {
+    if (sourceBufferRef.current && !sourceBufferRef.current.updating) {
+      try {
+        console.log('Appending chunk:', chunk.byteLength, 'bytes');
+        sourceBufferRef.current.appendBuffer(new Uint8Array(chunk));
+      } catch (error) {
+        console.error('Error appending chunk:', error);
+      }
+    }
+  };
+
+  return (
+    <video
+      ref={videoRef}
+      style={{ width: '640px', height: '360px', border: 'solid 1px' }}
+      controls
+      autoPlay
+    />
+  );
 };
 
 export default VideoPlayer;
